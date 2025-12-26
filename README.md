@@ -19,6 +19,17 @@ A lightweight PHP web interface for managing MQTT users, ACLs, and API keys. It 
   - `php-mosquitto` extension (`Mosquitto\Client`), or
   - `mosquitto_pub` CLI available on the web server
 
+## Mosquitto auth plugin config
+
+Recommended settings in `mosquitto.conf` (or `default.conf`) for this UI:
+
+```
+auth_opt_aclquery SELECT topic FROM tbACL WHERE username = '%s'
+auth_opt_userquery SELECT password FROM tbUsers WHERE username = '%s' AND is_enabled = 1
+auth_opt_superquery SELECT IFNULL(COUNT(*), 0) FROM tbUsers WHERE username = '%s' AND super = 1
+auth_opt_cache_ttl 0
+```
+
 ## Setup (step by step)
 
 1) Restore the database schema
