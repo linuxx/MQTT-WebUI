@@ -14,7 +14,7 @@ A lightweight PHP web interface for managing MQTT users, ACLs, and API keys. It 
 
 - PHP 7.4+ with extensions: `pdo_mysql`, `json`, `openssl` (recommended)
 - MySQL or MariaDB
-- MQTT broker (e.g., Mosquitto)
+- MQTT broker (e.g., Mosquitto with the MySQL auth plugin from https://github.com/jpmens/mosquitto-auth-plug)
 - One of:
   - `php-mosquitto` extension (`Mosquitto\Client`), or
   - `mosquitto_pub` CLI available on the web server
