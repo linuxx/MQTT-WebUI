@@ -61,7 +61,7 @@ class AclManager {
         ]);
         
         // Log action
-        $this->auditLogger->logAclChanged($aclId, $userId, $topic, $rw, 'created');
+        $this->auditLogger->logAclChanged($aclId, $userId, $topic, $rw, 'created', $username);
         
         return $aclId;
     }
@@ -135,7 +135,7 @@ class AclManager {
         // Log action (resolve user id from username)
         $userRec = $this->db->fetchOne('SELECT id FROM tbUsers WHERE username = ?', [$acl['username']]);
         $userId = $userRec['id'] ?? null;
-        $this->auditLogger->logAclChanged($aclId, $userId, $acl['topic'], $rw, 'updated');
+        $this->auditLogger->logAclChanged($aclId, $userId, $acl['topic'], $rw, 'updated', $acl['username']);
         
         return true;
     }
@@ -165,7 +165,7 @@ class AclManager {
 
         $userRec = $this->db->fetchOne('SELECT id FROM tbUsers WHERE username = ?', [$acl['username']]);
         $userId = $userRec['id'] ?? null;
-        $this->auditLogger->logAclChanged($aclId, $userId, $topic, $rw, 'updated');
+        $this->auditLogger->logAclChanged($aclId, $userId, $topic, $rw, 'updated', $acl['username']);
 
         return true;
     }
@@ -184,7 +184,7 @@ class AclManager {
         if ($rowsDeleted > 0) {
             $userRec = $this->db->fetchOne('SELECT id FROM tbUsers WHERE username = ?', [$acl['username']]);
             $userId = $userRec['id'] ?? null;
-            $this->auditLogger->logAclChanged($aclId, $userId, $acl['topic'], $acl['rw'], 'deleted');
+            $this->auditLogger->logAclChanged($aclId, $userId, $acl['topic'], $acl['rw'], 'deleted', $acl['username']);
         }
         
         return true;

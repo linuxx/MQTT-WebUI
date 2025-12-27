@@ -115,7 +115,7 @@ class AuditLogger {
     /**
      * Log ACL change
      */
-    public function logAclChanged($aclId, $userId, $topic, $rw, $action = 'updated') {
+    public function logAclChanged($aclId, $userId, $topic, $rw, $action = 'updated', $username = null) {
         if ((int)$rw === 1) {
             $rwText = 'read-only';
         } elseif ((int)$rw >= 2) {
@@ -123,11 +123,18 @@ class AuditLogger {
         } else {
             $rwText = 'unknown access level';
         }
+        if ($username) {
+            $userLabel = "user '$username'";
+        } elseif ($userId !== null) {
+            $userLabel = "user ID $userId";
+        } else {
+            $userLabel = 'unknown user';
+        }
         $this->log(
             'acl_' . $action,
             'acl',
             $aclId,
-            "ACL $action for user ID $userId on topic '$topic' ($rwText)"
+            "ACL $action for $userLabel on topic '$topic' ($rwText)"
         );
     }
     
