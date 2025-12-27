@@ -2,6 +2,8 @@
 
 A lightweight PHP web interface for managing MQTT users, ACLs, and API keys. It provides a login-protected dashboard for users and an admin area for user/ACL management, plus an HTTP endpoint to publish to MQTT using API keys.
 
+![Dashboard Screenshot](https://github.com/linuxx/MQTT-WebUI/blob/main/screenshots/Dashboard.jpg?raw=true)
+
 ## Features
 
 - User authentication with session hardening and CSRF protection
