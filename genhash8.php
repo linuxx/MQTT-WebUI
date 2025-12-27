@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             . "VALUES ('api_user', '{$hash}', NULL, 1, 1, NOW());\n\n"
             . "-- Ensure admin ACL for all topics\n"
             . "INSERT INTO tbACL (username, topic, rw)\n"
-            . "SELECT 'api_user', '#', 3\n"
+            . "SELECT 'api_user', '#', 2\n"
             . "WHERE NOT EXISTS (\n"
             . "  SELECT 1 FROM tbACL WHERE username = 'api_user' AND topic = '#'\n"
             . ");\n";

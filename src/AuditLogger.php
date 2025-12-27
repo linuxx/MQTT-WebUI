@@ -116,7 +116,13 @@ class AuditLogger {
      * Log ACL change
      */
     public function logAclChanged($aclId, $userId, $topic, $rw, $action = 'updated') {
-        $rwText = $rw == 1 ? 'read' : ($rw == 2 ? 'write' : 'read/write');
+        if ((int)$rw === 1) {
+            $rwText = 'read-only';
+        } elseif ((int)$rw >= 2) {
+            $rwText = 'read/write';
+        } else {
+            $rwText = 'unknown access level';
+        }
         $this->log(
             'acl_' . $action,
             'acl',

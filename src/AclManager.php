@@ -18,9 +18,9 @@ class AclManager {
      * Create ACL entry
      * @param int $userId
      * @param string $topic MQTT topic path
-     * @param int $rw 1=read, 2=write, 3=read/write
-     */
-    public function createAcl($userId, $topic, $rw = 3) {
+    * @param int $rw 1=read-only, 2=read/write
+    */
+    public function createAcl($userId, $topic, $rw = 2) {
         // Validate user exists
         $userManager = new UserManager();
         $user = $userManager->getUserById($userId);
@@ -38,7 +38,7 @@ class AclManager {
         }
         
         // Validate rw value
-        if (!in_array($rw, [1, 2, 3])) {
+        if (!in_array($rw, [1, 2])) {
             throw new Exception("Invalid read/write permission value");
         }
         
@@ -125,7 +125,7 @@ class AclManager {
         }
         
         // Validate rw value
-        if (!in_array($rw, [1, 2, 3])) {
+        if (!in_array($rw, [1, 2])) {
             throw new Exception("Invalid read/write permission value");
         }
         
@@ -157,7 +157,7 @@ class AclManager {
             throw new Exception("Topic cannot contain '%' placeholders");
         }
 
-        if (!in_array($rw, [1, 2, 3])) {
+        if (!in_array($rw, [1, 2])) {
             throw new Exception("Invalid read/write permission value");
         }
 
@@ -215,9 +215,15 @@ class AclManager {
     public function getUserTopicPermissions($userId, $topic) {
         $acl = $this->getAclByUserAndTopic($userId, $topic);
         
+        if (!$acl) {
+            return ['canRead' => false, 'canWrite' => false];
+        }
+
+        $rw = (int)$acl['rw'];
+
         return [
-            'canRead' => $acl ? in_array($acl['rw'], [1, 3]) : false,
-            'canWrite' => $acl ? in_array($acl['rw'], [2, 3]) : false,
+            'canRead' => $rw >= 1,
+            'canWrite' => $rw >= 2,
         ];
     }
     
@@ -225,15 +231,16 @@ class AclManager {
      * Get formatted read/write label
      */
     public static function formatPermissions($rw) {
-        switch ($rw) {
-            case 1:
-                return 'Read Only';
-            case 2:
-                return 'Write Only';
-            case 3:
-                return 'Read/Write';
-            default:
-                return 'Unknown';
+        $rwInt = (int)$rw;
+
+        if ($rwInt === 1) {
+            return 'Read Only';
         }
+
+        if ($rwInt >= 2) {
+            return 'Read & Write';
+        }
+
+        return 'Unknown';
     }
 }

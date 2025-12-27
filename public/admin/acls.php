@@ -111,8 +111,13 @@ require_once __DIR__ . '/../../includes/header.php';
             Default ACLs (<code>%u/#</code> and <code>#</code> for superusers) are inherited and cannot be deleted.
         </div>
         <div class="alert alert-secondary">
-            <strong>Topic patterns and access</strong>
-            <div class="mt-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <strong class="mb-0">Topic patterns and access</strong>
+                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#aclTopicHelp" aria-expanded="false" aria-controls="aclTopicHelp">
+                    Show details
+                </button>
+            </div>
+            <div class="collapse mt-3" id="aclTopicHelp">
 
                 <p>
                 MQTT topics are hierarchical, using <code>/</code> to separate levels.
@@ -151,20 +156,21 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <strong>Granting access to other users</strong>
                 <p>
-                By default, users only have access to their own topics.
-                To allow another user or service to access your data,
-                add a topic rule that explicitly includes their topic path.
+                Users only control topics under their own prefix. If <code>joe</code> needs to work with
+                <code>bob</code>'s devices, add an ACL for user <code>joe</code> that points at Bob's topic tree.
+                Grant the smallest scope that fits the job:
                 </p>
 
                 <div>Examples:</div>
                 <ul class="mb-0">
                 <li>
-                    Allow another user named <code>bob</code> to read your device data:
-                    <code>bob/devices/+</code>
+                    Only the <code>bob/device</code> topic: <code>bob/device</code>
                 </li>
                 <li>
-                    Allow a shared service to publish alerts:
-                    <code>alerts/#</code>
+                    Any topic Bob owns: <code>bob/#</code>
+                </li>
+                <li>
+                    Just temperature topics on one level: <code>bob/+/temp</code>
                 </li>
                 </ul>
 
@@ -202,8 +208,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <label for="rw" class="form-label">Permission</label>
                     <select id="rw" name="rw" class="form-select" required>
                         <option value="1">Read Only</option>
-                        <option value="2">Write Only</option>
-                        <option value="3" selected>Read/Write</option>
+                        <option value="2" selected>Read &amp; Write</option>
                     </select>
                 </div>
             </div>
@@ -237,12 +242,20 @@ require_once __DIR__ . '/../../includes/header.php';
                             <?php
                                 $isInherited = ($acl['topic'] === '%u/#') || ($acl['topic'] === '#' && !empty($acl['is_super']));
                                 $typeLabel = $isInherited ? 'Inherited' : 'Custom';
+                                $permLabel = AclManager::formatPermissions($acl['rw']);
+                                $permClass = ((int)$acl['rw'] === 1)
+                                    ? 'text-bg-info'
+                                    : (((int)$acl['rw'] >= 2) ? 'text-bg-success' : 'text-bg-secondary');
                             ?>
                             <tr>
                                 <td><strong><?php echo htmlspecialchars($acl['username']); ?></strong></td>
                                 <?php $displayTopic = str_replace('%u', $acl['username'], $acl['topic']); ?>
                                 <td><code><?php echo htmlspecialchars($displayTopic); ?></code></td>
-                                <td><?php echo htmlspecialchars(AclManager::formatPermissions($acl['rw'])); ?></td>
+                                <td>
+                                    <span class="badge <?php echo $permClass; ?>">
+                                        <?php echo htmlspecialchars($permLabel); ?>
+                                    </span>
+                                </td>
                                 <td>
                                     <span class="badge <?php echo $isInherited ? 'text-bg-secondary' : 'text-bg-info'; ?>"><?php echo $typeLabel; ?></span>
                                 </td>
@@ -283,8 +296,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                                         <label for="rw-<?php echo (int)$acl['id']; ?>" class="form-label">Permission</label>
                                                         <select id="rw-<?php echo (int)$acl['id']; ?>" name="rw" class="form-select" required>
                                                             <option value="1" <?php echo (int)$acl['rw'] === 1 ? 'selected' : ''; ?>>Read Only</option>
-                                                            <option value="2" <?php echo (int)$acl['rw'] === 2 ? 'selected' : ''; ?>>Write Only</option>
-                                                            <option value="3" <?php echo (int)$acl['rw'] === 3 ? 'selected' : ''; ?>>Read/Write</option>
+                                                            <option value="2" <?php echo (int)$acl['rw'] === 2 ? 'selected' : ''; ?>>Read &amp; Write</option>
                                                         </select>
                                                     </div>
                                                 </div>

@@ -160,7 +160,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                         $entityText = $entityOptions[$log['entity_type']] ?? ucfirst($log['entity_type']);
                                         $entityClass = $entityBadgeMap[$log['entity_type']] ?? 'text-bg-secondary';
                                     ?>
-                                    <span class="badge rounded-pill <?php echo $entityClass; ?>">
+                                    <span class="badge <?php echo $entityClass; ?>">
                                         <?php echo htmlspecialchars($entityText); ?>
                                     </span>
                                 </td>

@@ -151,7 +151,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <?php foreach ($acls as $acl): ?>
                     <?php
                         $displayTopic = str_replace('%u', $user['username'], $acl['topic']);
-                        $permLabel = $acl['rw'] == 1 ? 'Subscribe' : ($acl['rw'] == 2 ? 'Publish' : 'Pub/Sub');
+                        $permLabel = AclManager::formatPermissions($acl['rw']);
                     ?>
                     <li class="list-group-item"><code><?php echo htmlspecialchars($displayTopic); ?></code> - <?php echo htmlspecialchars($permLabel); ?></li>
                 <?php endforeach; ?>

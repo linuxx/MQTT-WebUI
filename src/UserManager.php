@@ -62,15 +62,17 @@ class UserManager {
         if ($isAdmin) {
             $adminTopic = '#';
             $adminAcl = $this->db->fetchOne(
-                'SELECT id FROM tbACL WHERE username = ? AND topic = ?',
+                'SELECT id, rw FROM tbACL WHERE username = ? AND topic = ?',
                 [$username, $adminTopic]
             );
             if (!$adminAcl) {
                 $this->db->insert('tbACL', [
                     'username' => $username,
                     'topic' => $adminTopic,
-                    'rw' => 3,
+                    'rw' => 2,
                 ]);
+            } elseif ((int)$adminAcl['rw'] !== 2) {
+                $this->db->update('tbACL', ['rw' => 2], 'id = ?', [$adminAcl['id']]);
             }
         } else {
             $defaultTopic = '%u/#';
@@ -82,10 +84,10 @@ class UserManager {
                 $this->db->insert('tbACL', [
                     'username' => $username,
                     'topic' => $defaultTopic,
-                    'rw' => 3,
+                    'rw' => 2,
                 ]);
-            } elseif ((int)$defaultAcl['rw'] !== 3) {
-                $this->db->update('tbACL', ['rw' => 3], 'id = ?', [$defaultAcl['id']]);
+            } elseif ((int)$defaultAcl['rw'] !== 2) {
+                $this->db->update('tbACL', ['rw' => 2], 'id = ?', [$defaultAcl['id']]);
             }
         }
         
@@ -279,29 +281,33 @@ class UserManager {
             $this->db->delete('tbACL', 'username = ? AND topic = ?', [$user['username'], '%u/#']);
             $adminTopic = '#';
             $adminAcl = $this->db->fetchOne(
-                'SELECT id FROM tbACL WHERE username = ? AND topic = ?',
+                'SELECT id, rw FROM tbACL WHERE username = ? AND topic = ?',
                 [$user['username'], $adminTopic]
             );
             if (!$adminAcl) {
                 $this->db->insert('tbACL', [
                     'username' => $user['username'],
                     'topic' => $adminTopic,
-                    'rw' => 3,
+                    'rw' => 2,
                 ]);
+            } elseif ((int)$adminAcl['rw'] !== 2) {
+                $this->db->update('tbACL', ['rw' => 2], 'id = ?', [$adminAcl['id']]);
             }
         } else {
             $this->db->delete('tbACL', 'username = ? AND topic = ?', [$user['username'], '#']);
             $defaultTopic = '%u/#';
             $defaultAcl = $this->db->fetchOne(
-                'SELECT id FROM tbACL WHERE username = ? AND topic = ?',
+                'SELECT id, rw FROM tbACL WHERE username = ? AND topic = ?',
                 [$user['username'], $defaultTopic]
             );
             if (!$defaultAcl) {
                 $this->db->insert('tbACL', [
                     'username' => $user['username'],
                     'topic' => $defaultTopic,
-                    'rw' => 3,
+                    'rw' => 2,
                 ]);
+            } elseif ((int)$defaultAcl['rw'] !== 2) {
+                $this->db->update('tbACL', ['rw' => 2], 'id = ?', [$defaultAcl['id']]);
             }
         }
         
